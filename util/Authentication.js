@@ -7,7 +7,7 @@ module.exports = class Authentication extends Firebase {
 
 	getAllUsername = (cb) => {
 		this.db.ref('users').once('value')
-		.then(function(snapshot) {
+		.then((snapshot) => {
 			var usernames = []
 
 			snapshot.forEach(function(childSnapshot) {
@@ -16,24 +16,19 @@ module.exports = class Authentication extends Firebase {
 
 			cb(usernames)
 		})
-		.catch(function(error) {
+		.catch((error) => {
 			cb(null)
 		})
 	}
 
-	isUsernameValid = (username) => {
+	isUsernameValid = (username, cb) => {
 		this.getAllUsername((usernames) => {
-			if (users !== null) {
-				if (usernames !== null && usernames.indexOf(username) !== -1) {
-					cb(false)
-					return
-				}
-
-				cb(true)
+			if (usernames !== null && usernames.indexOf(username) !== -1) {
+				cb(false)
 				return
 			}
 
-			cb(false)
+			cb(true)
 			return
 		})
  	}
@@ -50,21 +45,21 @@ module.exports = class Authentication extends Firebase {
 	signUp = (email, username, password, cb) => {
 		var username = username
 		this.auth.createUserWithEmailAndPassword(email, password)
-		.then(function() {
+		.then((user) => {
 			while(this.auth.currentUser == null) {
 			}
 
-			cb(null, null)
+			cb(null, user)
 		}) 
-		.catch(function(error) {
+		.catch((error) => {
 			cb(error.code, error.message)
 		})
 	}
 
 	signIn = (email, password, cb) => {
 		this.auth.signInWithEmailAndPassword(email, password)
-		.then(function() {
-			cb(null, null)
+		.then((user) => {
+			cb(null, user)
 		})
 		.catch(function(error) {
 			cb(error.code, error.message)
@@ -73,9 +68,9 @@ module.exports = class Authentication extends Firebase {
 
 	signOut = () => {
 		this.auth.signOut()
-		.then(function() {
+		.then(() => {
 			cb(null, null)
-		}).catch(function(error) {
+		}).catch((error) => {
 			cb(error.code, error.message)
 		});
 	}
